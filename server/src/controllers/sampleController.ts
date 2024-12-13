@@ -5,8 +5,8 @@ export async function getMovies(req, res) {
   const db = await connectToDatabase();
   const collection = db.collection("movies");
 
-  const query = {};
-  const result = await collection.findOne(query);
+  const id = req.query.id;
+  const result = await collection.findOne({_id: new ObjectId(id)});
 
   if (result) {
     res.status(200).send(result);

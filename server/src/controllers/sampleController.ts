@@ -1,4 +1,4 @@
-import {connectToDatabase} from "../configuration/db_connection.js";
+import {connectToDatabase} from "../configurations/db_connection.js";
 
 export async function getMovies(req, res) {
   const db = await connectToDatabase();

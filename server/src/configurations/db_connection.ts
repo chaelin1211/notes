@@ -24,3 +24,8 @@ export async function connectToDatabase() {
   }
   return database;
 }
+
+export async function closeDatabaseConnection() {
+  await client.close();
+  console.log("MongoDB connection closed!");
+}

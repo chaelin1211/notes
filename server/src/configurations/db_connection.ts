@@ -1,5 +1,6 @@
 import {Db, MongoClient} from 'mongodb';
 import { configDotenv } from "dotenv";
+import {logger} from "./logger.js";
 
 configDotenv();
 
@@ -15,11 +16,11 @@ let database: Db;
 export async function connectToDatabase() {
   if(!database) {
     await client.connect();
-    console.log('connected to MongoDB success');
+    logger.info('connected to MongoDB success');
     try {
       database = client.db('knitting_notes');
     } catch (error) {
-      console.error('error occur: MongoDB Connect Fail');
+      logger.error('error occur: MongoDB Connect Fail');
     }
   }
   return database;
@@ -27,5 +28,5 @@ export async function connectToDatabase() {
 
 export async function closeDatabaseConnection() {
   await client.close();
-  console.log("MongoDB connection closed!");
+  logger.info("MongoDB connection closed!");
 }

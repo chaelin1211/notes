@@ -17,7 +17,7 @@ export async function connectToDatabase() {
     await client.connect();
     console.log('connected to MongoDB success');
     try {
-      database = client.db('sample_mflix');
+      database = client.db('knitting_notes');
     } catch (error) {
       console.error('error occur: MongoDB Connect Fail');
     }

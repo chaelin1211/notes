@@ -1,5 +1,5 @@
 import express, {Express} from 'express';
-import sampleRouter from './routes/sample.js'
+import apiRouter from './routes/api.js'
 
 
 const app: Express = express();
@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true})); // 내장 queryString module 사용
 
 // Route
-app.use('/sample', sampleRouter);
+app.use('/api', apiRouter);
 
 
 export default app;

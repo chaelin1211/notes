@@ -35,8 +35,11 @@ export async function saveYarn(req, res) {
   const collection = db.collection("yarn");
 
   let result;
-  if(!!yarn.id) {
-    result = await collection.findOneAndUpdate({_id: new ObjectId(yarn.id)}, {$set: yarn});
+  if (!!yarn.id) {
+    result = await collection.findOneAndUpdate({_id: new ObjectId(yarn.id)},
+      {$set: yarn},
+      {returnDocument: "after"}           // 업데이트 후의 값 반환
+    );
   } else {
     result = await collection.insertOne(yarn);
   }

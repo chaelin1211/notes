@@ -19,7 +19,13 @@ export async function getYarns(req, res) {
   const db = await connectToDatabase();
   const collection = db.collection("yarn");
 
-  const cursor = await collection.find({})
+  let filter = {};
+  const tags = req.query.tag;
+  if (tags && tags.length > 0) {
+    filter = {tags};
+  }
+
+  const cursor = await collection.find(filter)
     ?.skip(Number.parseInt(req.query.from) || 0)
     ?.limit(Number.parseInt(req.query.size) || 20)?.toArray();
   if (cursor) {

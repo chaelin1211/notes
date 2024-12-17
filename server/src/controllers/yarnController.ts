@@ -55,3 +55,15 @@ export async function saveYarn(req, res) {
     data: result
   });
 }
+
+export async function deleteYarn(req, res) {
+  const db = await connectToDatabase();
+  const collection = db.collection("yarn");
+
+  const id = req.query.id;
+  const result = await collection.deleteOne({_id: new ObjectId(id)});
+
+  res.status(200).json({
+    success: result.acknowledged
+  });
+}

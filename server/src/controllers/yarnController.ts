@@ -8,9 +8,14 @@ export async function getYarn(req, res) {
   const collection = db.collection("yarn");
 
   const id = req.query.id;
-  const result = await collection.findOne({ _id: new ObjectId(id) });
+  try {
+    const result = await collection.findOne({ _id: new ObjectId(id) });
 
-  res.status(200).send(new ApiResponse(true, result));
+    res.status(200).send(new ApiResponse(true, result));
+  } catch (e) {
+    logger.error(e);
+    res.status(200).send(new ApiResponse(false));
+  }
 }
 
 export async function getYarns(req, res) {

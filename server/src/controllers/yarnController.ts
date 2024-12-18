@@ -1,18 +1,16 @@
-import {connectToDatabase} from "../configurations/db_connection.js";
-import {ObjectId} from 'mongodb';
+import { connectToDatabase } from "../configurations/db_connection.js";
+import { ObjectId } from "mongodb";
+import ApiResponse from "../models/ApiResponse.js";
+import { logger } from "../configurations/logger.js";
 
 export async function getYarn(req, res) {
   const db = await connectToDatabase();
   const collection = db.collection("yarn");
 
   const id = req.query.id;
-  const result = await collection.findOne({_id: new ObjectId(id)});
+  const result = await collection.findOne({ _id: new ObjectId(id) });
 
-  if (result) {
-    res.status(200).send(result);
-  } else {
-    res.status(404).send('No matching document found');
-  }
+  res.status(200).send(new ApiResponse(true, result));
 }
 
 export async function getYarns(req, res) {
@@ -22,38 +20,36 @@ export async function getYarns(req, res) {
   let filter = {};
   const tags = req.query.tag;
   if (tags && tags.length > 0) {
-    filter = {tags};
+    filter = { tags };
   }
 
-  const cursor = await collection.find(filter)
+  const resultList = await collection
+    .find(filter)
     ?.skip(Number.parseInt(req.query.from) || 0)
-    ?.limit(Number.parseInt(req.query.size) || 20)?.toArray();
-  if (cursor) {
-    res.status(200).send(cursor);
-  } else {
-    res.status(404).send('No matching document found');
-  }
+    ?.limit(Number.parseInt(req.query.size) || 20)
+    ?.toArray();
+
+  res.status(200).send(new ApiResponse(true, resultList));
 }
 
 export async function saveYarn(req, res) {
   const db = await connectToDatabase();
-  const yarn: Yarn = req.body;
+  const yarn = req.body;
   const collection = db.collection("yarn");
 
-  let result;
+  let result: boolean;
   if (!!yarn.id) {
-    result = await collection.findOneAndUpdate({_id: new ObjectId(yarn.id)},
-      {$set: yarn},
-      {returnDocument: "after"}           // 업데이트 후의 값 반환
+    const updateResult = await collection.updateOne(
+      { _id: new ObjectId(yarn.id) },
+      { $set: yarn },
     );
+    result = updateResult.acknowledged;
   } else {
-    result = await collection.insertOne(yarn);
+    const insertOneResult = await collection.insertOne(yarn);
+    result = insertOneResult.acknowledged;
   }
 
-  res.status(201).json({
-    success: true,
-    data: result
-  });
+  res.status(201).json(new ApiResponse(result));
 }
 
 export async function deleteYarn(req, res) {
@@ -61,9 +57,7 @@ export async function deleteYarn(req, res) {
   const collection = db.collection("yarn");
 
   const id = req.query.id;
-  const result = await collection.deleteOne({_id: new ObjectId(id)});
+  const result = await collection.deleteOne({ _id: new ObjectId(id) });
 
-  res.status(200).json({
-    success: result.acknowledged
-  });
+  res.status(200).json(new ApiResponse(result.acknowledged));
 }
